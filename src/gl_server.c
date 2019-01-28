@@ -424,8 +424,12 @@ int main(int argc, char** argv) {
   enum { WORD_MODE, LINE_MODE } op_mode = WORD_MODE;  // Default set
   int opt;
   char* layouts[MAX_CHANNELS];
+  u16 w = 300;
+  u16 h = 300;
+  u16 x = 0;
+  u16 y = 0;
 
-  while ((opt = getopt(argc, argv, ":hl:p:")) != -1)
+  while ((opt = getopt(argc, argv, ":l:p:w:h:x:y:")) != -1)
   {
       switch (opt)
       {
@@ -440,13 +444,24 @@ int main(int argc, char** argv) {
       case 'p':
           port = strtol(optarg, NULL, 10);
           break;
+      case 'w':
+          w = strtol(optarg, NULL, 10);
+          break;
+      case 'h':
+          h = strtol(optarg, NULL, 10);
+          break;
+      case 'x':
+          x = strtol(optarg, NULL, 10);
+          break;
+      case 'y':
+          y = strtol(optarg, NULL, 10);
+          break;
       case ':':
           fprintf(stderr, "Missing argument to option: '%c'\n", optopt);
           usage(argv[0]);
       case '?':
           fprintf(stderr, "Option not recognized: '%c'\n", optopt);
           usage(argv[0]);
-      case 'h':
       default:
           usage(argv[0]);
       }
@@ -464,6 +479,8 @@ int main(int argc, char** argv) {
   source = opc_new_source(port);
 
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitWindowSize(w, h);
+  glutInitWindowPosition(x, y);
   glutCreateWindow("OPC");
   glutReshapeFunc(reshape);
   glutDisplayFunc(display);
