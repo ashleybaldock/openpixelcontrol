@@ -81,11 +81,11 @@ const filteredEdges = edges.filter(([a, b]) => {
   return true;//a[1] > 0 || b[1] > 0;
 });
 
-const nLEDs = 12;
+const nLEDs = 32;
 const rawdata = [];
 filteredEdges.forEach(([from, to]) => {
   for (let i = 1; i < nLEDs + 1; i++) {
-    rawdata.push(vLerp(from, to, 1 / (nLEDs + 1) * i));
+    rawdata.push(vMul(vLerp(from, to, 1 / (nLEDs + 1) * i), 2));
   }
 });
 
