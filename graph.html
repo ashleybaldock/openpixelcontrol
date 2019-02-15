@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="http://d3js.org/d3.v2.min.js?2.9.3"></script>
+<style>
+
+.link {
+  stroke: #aaa;
+}
+
+.node text {
+stroke:#333;
+cursos:pointer;
+}
+
+.node circle{
+stroke:#fff;
+stroke-width:3px;
+fill:#555;
+}
+
+.node circle.box {
+stroke:#f00;
+}
+
+</style>
+<body>
+<script>
+
+const Colors = {};
+Colors.names = {
+    aqua: "#00ffff",
+    black: "#000000",
+    blue: "#0000ff",
+    brown: "#a52a2a",
+    cyan: "#00ffff",
+    darkblue: "#00008b",
+    darkcyan: "#008b8b",
+    darkgrey: "#a9a9a9",
+    darkgreen: "#006400",
+    darkkhaki: "#bdb76b",
+    darkmagenta: "#8b008b",
+    darkolivegreen: "#556b2f",
+    darkorange: "#ff8c00",
+    darkorchid: "#9932cc",
+    darkred: "#8b0000",
+    darksalmon: "#e9967a",
+    darkviolet: "#9400d3",
+    fuchsia: "#ff00ff",
+    green: "#008000",
+    indigo: "#4b0082",
+    lime: "#00ff00",
+    magenta: "#ff00ff",
+    maroon: "#800000",
+    navy: "#000080",
+    olive: "#808000",
+    orange: "#ffa500",
+    pink: "#ffc0cb",
+    purple: "#800080",
+    violet: "#800080",
+    red: "#ff0000",
+    silver: "#c0c0c0",
+    white: "#ffffff",
+    yellow: "#ffff00"
+};
+Colors.random = function() {
+    var result;
+    var count = 0;
+    for (var prop in this.names)
+        if (Math.random() < 1/++count)
+           result = prop;
+    return result;
+};
+
+var width = 960,
+    height = 600
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+const defs = svg.append("svg:defs");
+
+defs.append("svg:marker")
+    .attr("id", 'end')
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 18)
+    .attr("refY", 0.5)
+    .attr("markerWidth", 5)
+    .attr("markerHeight", 5)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+defs.append("svg:marker")
+    .attr("id", 'start')
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", -8)
+    .attr("refY", 0.5)
+    .attr("markerWidth", 5)
+    .attr("markerHeight", 5)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+d3.json("graphFile.json", function(json) {
+  const transformX = x => x * 200 + width / 2;
+  const transformY = y => y * 200 + height / 2;
+
+  var path = svg.append('g').selectAll(".link")
+            .data(json.links)
+            .enter().append("svg:path")
+            .attr('d', d => `M ${transformX(json.nodes[d.source].x)},${transformY(json.nodes[d.source].y)} L ${transformX(json.nodes[d.target].x)},${transformY(json.nodes[d.target].y)}`)
+            .attr("class", "link")
+            .style("stroke-width", 1.5)
+    .style("stroke", (d, i) => Object.values(Colors.names)[Math.floor(i / 2)])
+    .attr("marker-start", (d, i) => (i % 2) ? undefined : "url(#start)")
+    .attr("marker-end", (d, i) => (i % 2) ? "url(#end)" : undefined);
+
+  var node = svg.append("g")
+    .selectAll(".node")
+    .data(json.nodes)
+    .enter().append("g")
+    .attr("class", "node")
+    .attr("transform", d => { return "translate(" + transformX(d.x) + "," + transformY(d.y) + ")"; });
+
+  node.append("circle")
+      .attr('class', (d, i) => [4, 5, 15, 23].includes(i) ? 'box' : undefined)
+      .attr("r","5");
+
+  node.append("text")
+      .attr("dx", 12)
+      .attr("dy", ".35em")
+      .text((d, i) => i);
+});
+
+</script>
+
+
